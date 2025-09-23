@@ -1,129 +1,688 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>入口網站 — 皮卡稱的窩（簡易示範）</title>
-  <style>
-    /* Extremely simple styling */
-    html,body{height:100%;margin:0}
-    body{
-      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-      background: linear-gradient(180deg,#0f172a 0%, #071029 100%);
-      color:#e6eef8;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans TC","Microsoft JhengHei",sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBA風格對戰遊戲</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    header{width:100%;padding:24px 16px;text-align:center}
-    header h1{margin:0;font-size:18px;letter-spacing:1px}
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: #2a2a2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-    /* 容器會包住跑動的 GIF，並限制邊界 */
-    .stage{
-      position:relative;flex:1;width:100%;max-width:1100px;height:72vh;min-height:300px;
-      border-radius:12px;background:rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);
-      overflow:hidden;margin:18px;display:block;border:1px solid rgba(255,255,255,0.03);
-    }
+        .game-container {
+            width: 480px;
+            height: 320px;
+            background: #87ceeb;
+            border: 8px solid #333;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+        }
 
-    /* 圖片本身 */
-    #dvd{
-      position:absolute;left:0;top:0;user-select:none;pointer-events:auto;
-      width:140px;height:auto;will-change:transform;
-      filter:drop-shadow(0 6px 12px rgba(2,6,23,0.6));
-      cursor:pointer;
-    }
+        /* 開始畫面 */
+        .start-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            z-index: 10;
+        }
 
-    footer{padding:12px;font-size:13px;opacity:0.85}
+        .title {
+            font-size: 16px;
+            color: #fff;
+            text-shadow: 2px 2px 0px #000;
+            margin-bottom: 30px;
+            animation: blink 2s infinite;
+        }
 
-    /* 小提示 */
-    .hint{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,0.25);padding:6px 8px;border-radius:8px;font-size:12px}
-  </style>
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        .start-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 12px;
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: 3px solid #333;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .start-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* 角色選擇畫面 */
+        .character-select {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            z-index: 9;
+        }
+
+        .select-title {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .character-card {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border: 3px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-card:hover {
+            transform: scale(1.1);
+            border-color: #ffeb3b;
+            box-shadow: 0 0 10px #ffeb3b;
+        }
+
+        .character-card.selected {
+            border-color: #4caf50;
+            background: #e8f5e8;
+        }
+
+        .character-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            image-rendering: pixelated;
+        }
+
+        /* 戰鬥畫面 */
+        .battle-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #87ceeb 0%, #98fb98 100%);
+            display: none;
+            position: absolute;
+            z-index: 8;
+        }
+
+        .battle-field {
+            height: 60%;
+            position: relative;
+            background: linear-gradient(to bottom, #87ceeb 0%, #90ee90 100%);
+            overflow: hidden;
+        }
+
+        .enemy-area {
+            position: absolute;
+            top: 20px;
+            right: 50px;
+            width: 120px;
+            height: 120px;
+        }
+
+        .player-area {
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+        }
+
+        .character-sprite {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            transition: all 0.3s;
+        }
+
+        .character-sprite.attacking {
+            animation: attack 0.6s ease-in-out;
+        }
+
+        .character-sprite.hit {
+            animation: hit 0.4s ease-in-out;
+        }
+
+        @keyframes attack {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(20px) scale(1.1); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes hit {
+            0% { transform: translateX(0); filter: brightness(1); }
+            25% { transform: translateX(-10px); filter: brightness(0.5) hue-rotate(180deg); }
+            50% { transform: translateX(10px); filter: brightness(1.5); }
+            75% { transform: translateX(-5px); filter: brightness(0.7); }
+            100% { transform: translateX(0); filter: brightness(1); }
+        }
+
+        /* HP條 */
+        .hp-bar {
+            position: absolute;
+            width: 120px;
+            height: 20px;
+            background: #333;
+            border: 2px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .enemy-hp {
+            top: -30px;
+            right: 0;
+        }
+
+        .player-hp {
+            bottom: -30px;
+            left: 0;
+        }
+
+        .hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #ffeb3b 70%, #f44336 100%);
+            transition: width 0.5s ease-out;
+        }
+
+        .hp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8px;
+            color: #fff;
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        /* 問答區域 */
+        .battle-ui {
+            height: 40%;
+            background: #333;
+            border-top: 4px solid #000;
+            padding: 15px;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .question-area {
+            font-size: 10px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .answers-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .answer-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            padding: 8px;
+            background: #555;
+            color: #fff;
+            border: 2px solid #777;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .answer-btn:hover {
+            background: #666;
+            border-color: #999;
+        }
+
+        .answer-btn.correct {
+            background: #4caf50;
+            border-color: #66bb6a;
+        }
+
+        .answer-btn.wrong {
+            background: #f44336;
+            border-color: #ef5350;
+        }
+
+        /* 遊戲結束畫面 */
+        .game-over {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            z-index: 11;
+        }
+
+        .game-over-text {
+            font-size: 14px;
+            color: #fff;
+            text-shadow: 2px 2px 0px #000;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .restart-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            padding: 10px 15px;
+            background: #4caf50;
+            color: white;
+            border: 3px solid #333;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .restart-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* 特殊效果 */
+        .battle-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .battle-flash.active {
+            animation: flash 0.2s;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>超簡單入口 — 直接開啟就看得到</h1>
-  </header>
+    <div class="game-container">
+        <!-- 開始畫面 -->
+        <div class="start-screen" id="startScreen">
+            <div class="title">GBA風格對戰遊戲</div>
+            <button class="start-btn" onclick="showCharacterSelect()">開始遊戲</button>
+        </div>
 
-  <main class="stage" id="stage">
-    <!-- 你提供的 GIF -->
-    <img id="dvd" src="https://i.postimg.cc/wTv0BmcM/1726199409806.gif" alt="集利卡哇 GIF" />
+        <!-- 角色選擇畫面 -->
+        <div class="character-select" id="characterSelect">
+            <div class="select-title">選擇你的角色</div>
+            <div class="characters-grid">
+                <div class="character-card" onclick="selectCharacter(0)">
+                    <img src="https://i.postimg.cc/kM2KKGTX/202509164.png" alt="角色1" class="character-img">
+                </div>
+                <div class="character-card" onclick="selectCharacter(1)">
+                    <img src="https://i.postimg.cc/SxhMBrkJ/20250916-5.png" alt="角色2" class="character-img">
+                </div>
+                <div class="character-card" onclick="selectCharacter(2)">
+                    <img src="https://i.postimg.cc/Xq5rhZPf/20250916-2.png" alt="角色3" class="character-img">
+                </div>
+                <div class="character-card" onclick="selectCharacter(3)">
+                    <img src="https://i.postimg.cc/k5ZXmJKf/20250916-3.png" alt="角色4" class="character-img">
+                </div>
+            </div>
+            <button class="start-btn" id="startBattle" onclick="startBattle()" style="display:none;">開始戰鬥</button>
+        </div>
 
-    <div class="hint">點擊 GIF：暫停 / 繼續；雙擊：重置位置</div>
-  </main>
+        <!-- 戰鬥畫面 -->
+        <div class="battle-screen" id="battleScreen">
+            <div class="battle-field">
+                <div class="enemy-area">
+                    <img id="enemySprite" class="character-sprite" alt="敵人">
+                    <div class="hp-bar enemy-hp">
+                        <div class="hp-fill" id="enemyHP" style="width: 100%;"></div>
+                        <div class="hp-text">敵人 HP</div>
+                    </div>
+                </div>
+                <div class="player-area">
+                    <img id="playerSprite" class="character-sprite" alt="玩家">
+                    <div class="hp-bar player-hp">
+                        <div class="hp-fill" id="playerHP" style="width: 100%;"></div>
+                        <div class="hp-text">你的 HP</div>
+                    </div>
+                </div>
+            </div>
+            <div class="battle-ui">
+                <div class="question-area" id="questionArea">
+                    準備戰鬥...
+                </div>
+                <div class="answers-grid" id="answersGrid">
+                </div>
+            </div>
+            <div class="battle-flash" id="battleFlash"></div>
+        </div>
 
-  <footer>簡單版 • 可直接另存為 <code>index.html</code> 開啟或上傳到任何靜態主機</footer>
+        <!-- 遊戲結束畫面 -->
+        <div class="game-over" id="gameOver">
+            <div class="game-over-text" id="gameOverText">
+                遊戲結束
+            </div>
+            <button class="restart-btn" onclick="restartGame()">重新開始</button>
+        </div>
+    </div>
 
-  <script>
-    (function(){
-      const stage = document.getElementById('stage');
-      const dvd = document.getElementById('dvd');
+    <script>
+        let selectedCharacter = -1;
+        let currentEnemy = 0;
+        let playerHP = 100;
+        let enemyHP = 100;
+        let currentQuestion = 0;
+        let questionsAnswered = 0;
+        let isBoss = false;
 
-      // 可調整的參數（很簡單）
-      let speed = 2.2; // 基本速度倍率，改這個就慢/快
-      let vx = speed, vy = speed * 0.9; // 初速
+        const characters = [
+            "https://i.postimg.cc/kM2KKGTX/202509164.png",
+            "https://i.postimg.cc/SxhMBrkJ/20250916-5.png",
+            "https://i.postimg.cc/Xq5rhZPf/20250916-2.png",
+            "https://i.postimg.cc/k5ZXmJKf/20250916-3.png"
+        ];
 
-      // 隨機一個起始位置和方向
-      function rand(min,max){return Math.random()*(max-min)+min}
-      function placeRandom(){
-        const sw = stage.clientWidth - dvd.clientWidth;
-        const sh = stage.clientHeight - dvd.clientHeight;
-        dvd.style.left = Math.max(0, rand(0, sw || 1)) + 'px';
-        dvd.style.top  = Math.max(0, rand(0, sh || 1)) + 'px';
-        // 隨機方向
-        vx = (Math.random() > 0.5 ? 1 : -1) * speed;
-        vy = (Math.random() > 0.5 ? 1 : -1) * speed * (0.6 + Math.random()*0.8);
-      }
+        const boss = "https://i.postimg.cc/WbRFZnDX/20250916-1.png";
 
-      // 簡單碰撞偵測與位移
-      let last = performance.now();
-      let running = true;
-      function step(now){
-        const dt = Math.min(40, now - last) / 16.6667; // normalize to ~60fps
-        last = now;
-        if(running){
-          let x = parseFloat(dvd.style.left || 0);
-          let y = parseFloat(dvd.style.top  || 0);
-          x += vx * dt;
-          y += vy * dt;
+        const questions = [
+            {
+                question: "1 + 1 = ?",
+                answers: ["1", "2", "3", "4"],
+                correct: 1
+            },
+            {
+                question: "2 + 2 = ?", 
+                answers: ["3", "4", "5", "6"],
+                correct: 1
+            },
+            {
+                question: "3 + 3 = ?",
+                answers: ["5", "6", "7", "8"],
+                correct: 1
+            }
+        ];
 
-          const sw = stage.clientWidth - dvd.clientWidth;
-          const sh = stage.clientHeight - dvd.clientHeight;
+        const bossQuestion = {
+            question: "我是誰？",
+            answers: ["孫中山", "蔣中正", "毛澤東", "鄧小平"],
+            correct: 0
+        };
 
-          if(x <= 0){ x = 0; vx = Math.abs(vx); }
-          if(x >= sw){ x = sw; vx = -Math.abs(vx); }
-          if(y <= 0){ y = 0; vy = Math.abs(vy); }
-          if(y >= sh){ y = sh; vy = -Math.abs(vy); }
-
-          dvd.style.left = x + 'px';
-          dvd.style.top  = y + 'px';
+        function showCharacterSelect() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('characterSelect').style.display = 'flex';
         }
-        requestAnimationFrame(step);
-      }
 
-      // Interactions: click to pause/resume, dblclick to reset
-      dvd.addEventListener('click', ()=>{ running = !running; });
-      dvd.addEventListener('dblclick', ()=>{ placeRandom(); });
+        function selectCharacter(index) {
+            selectedCharacter = index;
+            
+            // 移除所有選中狀態
+            const cards = document.querySelectorAll('.character-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            
+            // 添加選中狀態
+            cards[index].classList.add('selected');
+            
+            // 顯示開始戰鬥按鈕
+            document.getElementById('startBattle').style.display = 'block';
+        }
 
-      // 窗口大小改變時確保位置合法
-      window.addEventListener('resize', ()=>{
-        const sw = stage.clientWidth - dvd.clientWidth;
-        const sh = stage.clientHeight - dvd.clientHeight;
-        let x = parseFloat(dvd.style.left || 0);
-        let y = parseFloat(dvd.style.top || 0);
-        if(x > sw) dvd.style.left = Math.max(0,sw) + 'px';
-        if(y > sh) dvd.style.top  = Math.max(0,sh) + 'px';
-      });
+        function startBattle() {
+            if (selectedCharacter === -1) return;
+            
+            document.getElementById('characterSelect').style.display = 'none';
+            document.getElementById('battleScreen').style.display = 'block';
+            
+            initializeBattle();
+        }
 
-      // 初始放置並啟動
-      dvd.onload = ()=>{ placeRandom(); last = performance.now(); requestAnimationFrame(step); };
-      // 如果圖片已快取完成且觸發不到onload
-      if(dvd.complete) { dvd.onload(); }
+        function initializeBattle() {
+            playerHP = 100;
+            enemyHP = 100;
+            questionsAnswered = 0;
+            
+            // 設置玩家角色
+            document.getElementById('playerSprite').src = characters[selectedCharacter];
+            
+            // 設置敵人（如果是最後一場則是Boss）
+            if (currentEnemy >= 3) {
+                document.getElementById('enemySprite').src = boss;
+                isBoss = true;
+            } else {
+                // 選擇一個不同於玩家的角色作為敵人
+                let enemyIndex;
+                do {
+                    enemyIndex = Math.floor(Math.random() * characters.length);
+                } while (enemyIndex === selectedCharacter);
+                
+                document.getElementById('enemySprite').src = characters[enemyIndex];
+                isBoss = false;
+            }
+            
+            updateHPBars();
+            nextQuestion();
+        }
 
-      // 小技巧：按鍵 +/- 可調速度
-      window.addEventListener('keydown', (e)=>{
-        if(e.key === '+' || e.key === '='){ speed = Math.min(12, speed + 0.4); vx = Math.sign(vx)*speed; vy = Math.sign(vy)*speed; }
-        if(e.key === '-' || e.key === '_'){ speed = Math.max(0.2, speed - 0.4); vx = Math.sign(vx)*speed; vy = Math.sign(vy)*speed; }
-      });
+        function nextQuestion() {
+            if (questionsAnswered >= 3) {
+                // 戰鬥結束
+                endBattle(true);
+                return;
+            }
 
-    })();
-  </script>
+            let questionData;
+            if (isBoss) {
+                questionData = bossQuestion;
+            } else {
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                questionData = questions[randomIndex];
+            }
+
+            document.getElementById('questionArea').textContent = questionData.question;
+            
+            const answersGrid = document.getElementById('answersGrid');
+            answersGrid.innerHTML = '';
+            
+            questionData.answers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.className = 'answer-btn';
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(index, questionData.correct);
+                answersGrid.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedIndex, correctIndex) {
+            const buttons = document.querySelectorAll('.answer-btn');
+            
+            // 禁用所有按鈕
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+            
+            if (selectedIndex === correctIndex) {
+                // 正確答案
+                buttons[selectedIndex].classList.add('correct');
+                setTimeout(() => {
+                    playerAttack();
+                }, 1000);
+            } else {
+                // 錯誤答案
+                buttons[selectedIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+                setTimeout(() => {
+                    enemyAttack();
+                }, 1000);
+            }
+        }
+
+        function playerAttack() {
+            // 玩家攻擊動畫
+            const playerSprite = document.getElementById('playerSprite');
+            playerSprite.classList.add('attacking');
+            
+            // 閃光效果
+            document.getElementById('battleFlash').classList.add('active');
+            
+            setTimeout(() => {
+                playerSprite.classList.remove('attacking');
+                document.getElementById('battleFlash').classList.remove('active');
+                
+                // 敵人受傷
+                const enemySprite = document.getElementById('enemySprite');
+                enemySprite.classList.add('hit');
+                
+                enemyHP -= 34; // 每次攻擊減少約1/3血量
+                if (enemyHP < 0) enemyHP = 0;
+                
+                updateHPBars();
+                
+                setTimeout(() => {
+                    enemySprite.classList.remove('hit');
+                    
+                    if (enemyHP <= 0) {
+                        endBattle(true);
+                    } else {
+                        questionsAnswered++;
+                        setTimeout(() => nextQuestion(), 1000);
+                    }
+                }, 500);
+            }, 300);
+        }
+
+        function enemyAttack() {
+            // 敵人攻擊動畫
+            const enemySprite = document.getElementById('enemySprite');
+            enemySprite.classList.add('attacking');
+            
+            // 閃光效果
+            document.getElementById('battleFlash').classList.add('active');
+            
+            setTimeout(() => {
+                enemySprite.classList.remove('attacking');
+                document.getElementById('battleFlash').classList.remove('active');
+                
+                // 玩家受傷
+                const playerSprite = document.getElementById('playerSprite');
+                playerSprite.classList.add('hit');
+                
+                playerHP -= 34; // 每次攻擊減少約1/3血量
+                if (playerHP < 0) playerHP = 0;
+                
+                updateHPBars();
+                
+                setTimeout(() => {
+                    playerSprite.classList.remove('hit');
+                    
+                    if (playerHP <= 0) {
+                        endBattle(false);
+                    } else {
+                        questionsAnswered++;
+                        setTimeout(() => nextQuestion(), 1000);
+                    }
+                }, 500);
+            }, 300);
+        }
+
+        function updateHPBars() {
+            document.getElementById('playerHP').style.width = playerHP + '%';
+            document.getElementById('enemyHP').style.width = enemyHP + '%';
+        }
+
+        function endBattle(playerWon) {
+            setTimeout(() => {
+                document.getElementById('battleScreen').style.display = 'none';
+                document.getElementById('gameOver').style.display = 'flex';
+                
+                let message;
+                if (playerWon) {
+                    if (isBoss) {
+                        message = "恭喜！你擊敗了最終Boss！\n遊戲完成！";
+                    } else {
+                        currentEnemy++;
+                        if (currentEnemy >= 3) {
+                            message = "太棒了！準備挑戰最終Boss！";
+                        } else {
+                            message = "勝利！準備下一場戰鬥！";
+                        }
+                    }
+                } else {
+                    message = "敗北...再試一次吧！";
+                }
+                
+                document.getElementById('gameOverText').textContent = message;
+                
+                // 如果還有敵人要打，自動繼續下一戰
+                if (playerWon && !isBoss && currentEnemy < 4) {
+                    setTimeout(() => {
+                        document.getElementById('gameOver').style.display = 'none';
+                        document.getElementById('battleScreen').style.display = 'block';
+                        initializeBattle();
+                    }, 3000);
+                }
+            }, 1000);
+        }
+
+        function restartGame() {
+            selectedCharacter = -1;
+            currentEnemy = 0;
+            playerHP = 100;
+            enemyHP = 100;
+            questionsAnswered = 0;
+            isBoss = false;
+            
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+            
+            // 重置角色選擇
+            const cards = document.querySelectorAll('.character-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            document.getElementById('startBattle').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
