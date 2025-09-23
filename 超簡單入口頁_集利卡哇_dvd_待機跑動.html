@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>入口網站 — 皮卡稱的窩（簡易示範）</title>
+  <style>
+    /* Extremely simple styling */
+    html,body{height:100%;margin:0}
+    body{
+      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+      background: linear-gradient(180deg,#0f172a 0%, #071029 100%);
+      color:#e6eef8;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans TC","Microsoft JhengHei",sans-serif;
+    }
+
+    header{width:100%;padding:24px 16px;text-align:center}
+    header h1{margin:0;font-size:18px;letter-spacing:1px}
+
+    /* 容器會包住跑動的 GIF，並限制邊界 */
+    .stage{
+      position:relative;flex:1;width:100%;max-width:1100px;height:72vh;min-height:300px;
+      border-radius:12px;background:rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);
+      overflow:hidden;margin:18px;display:block;border:1px solid rgba(255,255,255,0.03);
+    }
+
+    /* 圖片本身 */
+    #dvd{
+      position:absolute;left:0;top:0;user-select:none;pointer-events:auto;
+      width:140px;height:auto;will-change:transform;
+      filter:drop-shadow(0 6px 12px rgba(2,6,23,0.6));
+      cursor:pointer;
+    }
+
+    footer{padding:12px;font-size:13px;opacity:0.85}
+
+    /* 小提示 */
+    .hint{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,0.25);padding:6px 8px;border-radius:8px;font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>超簡單入口 — 直接開啟就看得到</h1>
+  </header>
+
+  <main class="stage" id="stage">
+    <!-- 你提供的 GIF -->
+    <img id="dvd" src="https://i.postimg.cc/wTv0BmcM/1726199409806.gif" alt="集利卡哇 GIF" />
+
+    <div class="hint">點擊 GIF：暫停 / 繼續；雙擊：重置位置</div>
+  </main>
+
+  <footer>簡單版 • 可直接另存為 <code>index.html</code> 開啟或上傳到任何靜態主機</footer>
+
+  <script>
+    (function(){
+      const stage = document.getElementById('stage');
+      const dvd = document.getElementById('dvd');
+
+      // 可調整的參數（很簡單）
+      let speed = 2.2; // 基本速度倍率，改這個就慢/快
+      let vx = speed, vy = speed * 0.9; // 初速
+
+      // 隨機一個起始位置和方向
+      function rand(min,max){return Math.random()*(max-min)+min}
+      function placeRandom(){
+        const sw = stage.clientWidth - dvd.clientWidth;
+        const sh = stage.clientHeight - dvd.clientHeight;
+        dvd.style.left = Math.max(0, rand(0, sw || 1)) + 'px';
+        dvd.style.top  = Math.max(0, rand(0, sh || 1)) + 'px';
+        // 隨機方向
+        vx = (Math.random() > 0.5 ? 1 : -1) * speed;
+        vy = (Math.random() > 0.5 ? 1 : -1) * speed * (0.6 + Math.random()*0.8);
+      }
+
+      // 簡單碰撞偵測與位移
+      let last = performance.now();
+      let running = true;
+      function step(now){
+        const dt = Math.min(40, now - last) / 16.6667; // normalize to ~60fps
+        last = now;
+        if(running){
+          let x = parseFloat(dvd.style.left || 0);
+          let y = parseFloat(dvd.style.top  || 0);
+          x += vx * dt;
+          y += vy * dt;
+
+          const sw = stage.clientWidth - dvd.clientWidth;
+          const sh = stage.clientHeight - dvd.clientHeight;
+
+          if(x <= 0){ x = 0; vx = Math.abs(vx); }
+          if(x >= sw){ x = sw; vx = -Math.abs(vx); }
+          if(y <= 0){ y = 0; vy = Math.abs(vy); }
+          if(y >= sh){ y = sh; vy = -Math.abs(vy); }
+
+          dvd.style.left = x + 'px';
+          dvd.style.top  = y + 'px';
+        }
+        requestAnimationFrame(step);
+      }
+
+      // Interactions: click to pause/resume, dblclick to reset
+      dvd.addEventListener('click', ()=>{ running = !running; });
+      dvd.addEventListener('dblclick', ()=>{ placeRandom(); });
+
+      // 窗口大小改變時確保位置合法
+      window.addEventListener('resize', ()=>{
+        const sw = stage.clientWidth - dvd.clientWidth;
+        const sh = stage.clientHeight - dvd.clientHeight;
+        let x = parseFloat(dvd.style.left || 0);
+        let y = parseFloat(dvd.style.top || 0);
+        if(x > sw) dvd.style.left = Math.max(0,sw) + 'px';
+        if(y > sh) dvd.style.top  = Math.max(0,sh) + 'px';
+      });
+
+      // 初始放置並啟動
+      dvd.onload = ()=>{ placeRandom(); last = performance.now(); requestAnimationFrame(step); };
+      // 如果圖片已快取完成且觸發不到onload
+      if(dvd.complete) { dvd.onload(); }
+
+      // 小技巧：按鍵 +/- 可調速度
+      window.addEventListener('keydown', (e)=>{
+        if(e.key === '+' || e.key === '='){ speed = Math.min(12, speed + 0.4); vx = Math.sign(vx)*speed; vy = Math.sign(vy)*speed; }
+        if(e.key === '-' || e.key === '_'){ speed = Math.max(0.2, speed - 0.4); vx = Math.sign(vx)*speed; vy = Math.sign(vy)*speed; }
+      });
+
+    })();
+  </script>
+</body>
+</html>
