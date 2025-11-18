@@ -3,168 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-    <title>孫中山的科普教室 | Sun Yat-sen's History Classroom</title>
+    <title>孫中山的科普教室｜黑白照片 vs 修復上色</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Noto Sans TC', Arial, sans-serif; background: #f0f0f0; padding: 2rem 0; line-height: 1.8; }
-        .sun-container { max-width: 1400px; margin: 0 auto; padding: 0 15px; display: flex; flex-direction: column; gap: 2rem; }
-
-        /* 導覽列 */
-        .sun-nav {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(244,162,97,0.95); padding: 0.5rem 1rem; border-radius: 30px;
-            display: flex; gap: 1rem; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(8px);
-        }
-        .nav-btn { color: white; text-decoration: none; font-weight: bold; font-size: 0.95rem;
-            padding: 0.4rem 0.9rem; border-radius: 20px; transition: 0.3s; }
-        .nav-btn:hover { background: #e67e22; }
-        html { scroll-behavior: smooth; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Noto Sans TC',sans-serif;background:#f0f0f0;overflow-x:hidden}
+        .wrapper{max-width:1400px;margin:0 auto;padding:0 15px}
 
         /* 右下角按鈕群 */
-        .bottom-buttons {
-            position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 12px;
-        }
-        .btn-circle {
-            width: 56px; height: 56px; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-weight: bold; color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; transition: 0.3s; font-size: 1.2rem;
-        }
-        #lang-toggle { background: #e67e22; }
-        #lang-toggle:hover { background: #d35400; transform: scale(1.1); }
-        #close-btn { background: #c0392b; }
-        #close-btn:hover { background: #e74c3c; transform: scale(1.1); }
+        .bottom-btns{position:fixed;bottom:20px;right:20px;display:flex;gap:12px;z-index:1000}
+        .btn{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:1.4rem;box-shadow:0 4px 15px rgba(0,0,0,.3);cursor:pointer;transition:.3s}
+        #lang-btn{background:#e67e22}
+        #lang-btn:hover{background:#d35400;transform:scale(1.1)}
+        #close-btn{background:#c0392b}
+        #close-btn:hover{background:#e74c3c;transform:scale(1.1)}
 
-        #lang-switch { display: none; }
-        .en { display: none; }
-        #lang-switch:checked ~ .sun-container .zh { display: none; }
-        #lang-switch:checked ~ .sun-container .en { display: block; }
-        #lang-switch:checked + .bottom-buttons #lang-toggle .zh { display: none; }
-        #lang-switch:checked + .bottom-buttons #lang-toggle .en { display: block; }
+        /* 中英切換核心 */
+        #lang-switch{display:none}
+        .en{display:none}
+        #lang-switch:checked ~ .wrapper .en{display:block}
+        #lang-switch:checked ~ .wrapper .zh{display:none}
+        #lang-switch:checked + .bottom-btns #lang-btn .zh{display:none}
+        #lang-switch:checked + .bottom-btns #lang-btn .en{display:block}
 
-        /* 教室區塊 */
-        .sun-section { background: #fff; border-radius: 0 0 14px 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); overflow: hidden; }
-        .sun-header { background: linear-gradient(135deg, #f4a261, #f7c08a); color: #fff; padding: 2rem 1.2rem; text-align: center; }
-        .sun-logo { font-size: 1.8rem; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2); letter-spacing: -1px; }
+        /* 主要內容（完全保留您原始 1.txt 的所有樣式與動畫） */
+        .section{width:100%;max-width:1300px;margin:0 auto;background:#fff;border-radius:0 0 14px 14px;box-shadow:0 8px 20px rgba(0,0,0,.1);overflow:hidden}
+        .header{background:linear-gradient(135deg,#f4a261,#f7c08a);color:#fff;padding:2rem 1.2rem;position:sticky;top:0;z-index:100;box-shadow:0 4px 12px rgba(244,162,97,.3);text-align:center}
+        .title{font-size:1.8rem;font-weight:bold;letter-spacing:-1px;text-shadow:0 2px 4px rgba(0,0,0,.2)}
 
-        .sun-content { padding: 1.5rem; background: #fef9f0; }
+        .content-container{height:750px;background:#fef9f0;position:relative;overflow:hidden}
+        .content{height:100%;overflow-y:auto;padding:1rem 1.3rem 2rem}
 
-        /* 點擊展開樣式 */
-        .toggle-label {
-            display: block; background: #fce8c9; color: #e67e22; padding: 0.9rem 1.2rem;
-            border-radius: 12px; font-weight: bold; text-align: center; cursor: pointer;
-            margin: 1rem 0; box-shadow: 0 3px 10px rgba(0,0,0,0.1); transition: 0.3s;
-        }
-        .toggle-label:hover { background: #f7c08a; transform: translateY(-2px); }
-        .toggle-content {
-            height: 0; overflow: hidden; transition: all 0.6s ease; background: #fdf1e0;
-            border-radius: 12px; margin-bottom: 1rem;
-        }
-        .toggle-content img {
-            width: 100%; max-width: 900px; height: auto; display: block; margin: 0 auto;
-            border-radius: 12px; border: 3px solid #fce8c9; box-shadow: 0 5px 16px rgba(139,88,47,0.2);
-            loading: lazy;
-        }
-        .toggle-content > div { padding: 1.5rem; font-size: 1.2rem; }
+        .image-row{display:flex;gap:1rem;transition:all .6s cubic-bezier(.25,.8,.25,1);transform-origin:top center;position:relative;z-index:2}
+        .img-block{flex:1;text-align:center}
+        .img-block img{width:100%;height:320px;object-fit:cover;border-radius:12px;border:3px solid #fce8c9;box-shadow:0 5px 16px rgba(139,88,47,.2);transition:all .6s}
+        .img-label{margin-top:.4rem;font-weight:bold;color:#e67e22;background:#fce8c9;padding:.25rem .7rem;border-radius:20px;font-size:.95rem;display:inline-block;transition:all .6s}
 
-        input[type="checkbox"]:checked ~ .toggle-content {
-            height: auto; min-height: 150px; padding: 1.5rem;
-        }
-        input[type="checkbox"]:checked ~ .toggle-label {
-            background: #e67e22; color: white;
-        }
+        .qa-block{position:relative;margin-top:-10px;background:#fdf1e0;border-radius:14px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.1);transition:all .6s;z-index:1}
+        #trigger{display:none}
 
-        /* 全局互斥：點空白處關閉所有 */
-        .global-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 500; display: none;
-        }
-        input[type="checkbox"]:checked ~ .global-overlay { display: block; }
+        .question{display:block;padding:.9rem 1.1rem;border-left:6px solid #f4a261;font-size:1.2rem;line-height:1.7;cursor:pointer;position:relative;z-index:2;transition:all .4s;user-select:none}
+        .question:hover{background:#fce8c9;transform:translateY(-1px);box-shadow:0 5px 14px rgba(244,162,97,.25)}
+        .question::after{content:"▶";position:absolute;right:1.1rem;top:50%;transform:translateY(-50%);color:#e67e22;transition:.3s}
+        .question:hover::after{transform:translateY(-50%) rotate(90deg)}
 
-        @media (max-width: 768px) {
-            .sun-logo { font-size: 1.5rem; }
+        .answer{position:absolute;inset:0;background:rgba(255,248,232,.98);border-left:6px solid #e67e22;opacity:0;z-index:3;padding:0 1.1rem;transition:all .7s;transform:translateY(20px) scale(.96);backdrop-filter:blur(4px)}
+        .answer-content{height:100%;overflow-y:auto;padding:1.3rem 0;font-size:1.2rem;line-height:1.8}
+
+        /* 關鍵動畫（完全照您原始 1.txt） */
+        #trigger:checked ~ .image-row{transform:scale(.30);opacity:.92;filter:brightness(.95)}
+        #trigger:checked ~ .image-row img{border-radius:16px;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+        #trigger:checked ~ .image-row .img-label{font-size:1rem;padding:.2rem .55rem}
+        #trigger:checked ~ .qa-block{transform:translateY(-200px);z-index:10;height:920px;box-shadow:0 12px 28px rgba(244,162,97,.35);border-radius:16px}
+        #trigger:checked ~ .qa-block .answer{opacity:1;transform:none}
+
+        /* 手機 */
+        @media(max-width:768px){
+            #trigger:checked ~ .qa-block{transform:translateY(-208px);height:auto;min-height:1650px}
+            .answer-content{padding-bottom:2rem}
         }
     </style>
 </head>
 <body>
 
-    <input type="checkbox" id="lang-switch">
-    <div class="bottom-buttons">
-        <label for="lang-switch" id="lang-toggle" class="btn-circle"><span class="zh">中</span><span class="en">EN</span></label>
-        <div id="close-btn" class="btn-circle" onclick="window.close()||window.open('','_self').close()">×</div>
+<!-- 中英切換 -->
+<input type="checkbox" id="lang-switch">
+<div class="bottom-btns">
+    <label for="lang-switch" id="lang-btn" class="btn"><span class="zh">中</span><span class="en">EN</span></label>
+    <a href="about.html" id="close-btn" class="btn">→</a>
+</div>
+
+<div class="wrapper">
+    <div class="section">
+        <header class="header">
+            <div class="title">
+                <span class="zh">黑白照片 vs 修復上色　Black-and-White vs Colorized</span>
+                <span class="en">Black-and-White vs Colorized</span>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <div class="content">
+                <input type="checkbox" id="trigger">
+
+                <div class="image-row">
+                    <div class="img-block">
+                        <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/38/ascdc_muse.jpg" alt="黑白原圖">
+                        <div class="img-label"><span class="zh">黑白原圖 Original Black-and-White</span><span class="en">Original Black-and-White</span></div>
+                    </div>
+                    <div class="img-block">
+                        <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/32/31/ascdc_muse.jpg" alt="修復上色">
+                        <div class="img-label"><span class="zh">修復上色 Restored and Colorized</span><span class="en">Restored and Colorized</span></div>
+                    </div>
+                </div>
+
+                <div class="qa-block">
+                    <label for="trigger" class="question">
+                        <span class="zh">【Q】某位喜歡歷史老照片的觀眾提問：<br><br>看過這些黑白照片的原圖，再看修復後的彩圖，覺得這些臺灣老建築好令人驚豔！不過仔細想想，100多年前孫中山來臺灣的時候，這些雖然建築雖然新建沒幾年，但看起來的感覺應該也不會那麼新……是因為選擇「修舊如新」的修復方式嗎？<span style="color:#6b9080;">（點擊繼續..）</span></span>
+                        <span class="en">【Q】A viewer who enjoys old historical photographs asked:<br><br>Looking at the original black and white photos and then at the restored color images, I'm amazed by these old Taiwanese buildings! But thinking about it carefully, when Sun Yat-sen came to Taiwan more than 100 years ago, although these buildings were only a few years old, they probably didn't look that new... Was it because the “Reviving the Old as New” approach was chosen?<span style="color:#6b9080;"> (See more)</span></span>
+                    </label>
+
+                    <div class="answer">
+                        <div class="answer-content">
+                            <strong class="zh">臺灣古寫真上色答復：</strong>
+                            <strong class="en">Response from Colorized old photos of Taiwan:</strong><br><br>
+                            
+                            <span class="zh">
+                            • 這批圖資整體狀況欠佳，修復難度極高，以「基隆火車站前荷揚狀況」來說，雖然網點化不算特別嚴重，但其實是沒什麼細節的，搬運物品的工人有沒有戴帽子都難以辨識；畫面右邊的新店街候船室是重要的視覺焦點，進行修復就需要很多人工介入，例如找其他可以補的圖來補，但這些圖光線、角度不見得會和原圖一致，就需要人工大量介入調整修飾。<br><br>
+                            •此外在黑白原圖中難以辨識的戎克船 （昔日臺灣常見的船隻，配色以紅黑綠藍白為主）、基隆郵便局（今愛三路基隆郵局）、日新橋（今富狗橋），都是1913年在這個基隆港視角會看到的重點景觀，在修復後得以重現細節，則是來自於對於歷史場景的專業理解和詮釋。<br><br>
+                            • 本次是以長邊4000-5000px以上為目標去修補，日後如果辦理實體展覽需要大圖輸出，也會有非常好的視覺效果，建築的風格特徵等細節看得更清楚，我們也可以更貼近當年這位革命旅人來臺所見的情景！
+                            </span>
+
+                            <span class="en">
+                            • The overall condition of these images is poor, making restoration extremely difficult. Taking the image of "Unloading Scene in Front of Keelung Railway Station" as an example, while the dot matrix effect isn't particularly severe, it lacks detail; it's difficult to even discern whether the workers carrying goods are wearing hats. The waiting room on Xindian Street on the right side of the image is a key visual focal point, requiring significant manual intervention for restoration. This might involve finding other images to supplement the originals, but these images may not have the same lighting and angles, necessitating extensive manual adjustments and retouching.<br><br>
+                            • This restoration effort aims to restore images with a long side of 4000-5000 pixels or more. This will provide a much better visual experience for future physical exhibitions requiring large-scale output, allowing for clearer visualization of architectural styles and details, and enabling us to more closely understand the scene witnessed by this revolutionary traveler during his visit to Taiwan!
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <!-- 點空白處關閉所有展開項目 -->
-    <div class="global-overlay" onclick="document.querySelectorAll('input[type=checkbox]:checked').forEach(c=>c.checked=false)"></div>
-
-    <div class="sun-nav">
-        <a href="#classroom-1" class="nav-btn">教室 1</a>
-        <a href="#classroom-2" class="nav-btn">教室 2</a>
-        <a href="#classroom-3" class="nav-btn">教室 3</a>
-    </div>
-
-    <div class="sun-container">
-
-        <!-- 教室 1 -->
-        <div class="sun-section" id="classroom-1">
-            <header class="sun-header"><div class="sun-logo"><span class="zh">黑白照片 vs 修復上色　</span><span class="en">Black-and-White vs Colorized</span></div></header>
-            <div class="sun-content">
-
-                <input type="checkbox" id="i1-1"><label for="i1-1" class="toggle-label"><span class="zh">黑白原圖 </span><span class="en">Original Black-and-White</span></label>
-                <div class="toggle-content"><img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/38/ascdc_muse.jpg" loading="lazy"></div>
-
-                <input type="checkbox" id="i1-2"><label for="i1-2" class="toggle-label"><span class="zh">修復上色</span><span class="en">Restored and Colorized</span></label>
-                <div class="toggle-content"><img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/32/31/ascdc_muse.jpg" loading="lazy"></div>
-
-                <input type="checkbox" id="q1"><label for="q1" class="toggle-label"><span class="zh">【Q】觀眾提問（點擊查看）...</span><span class="en">【Q】Viewer Question (Click to view)...</span></label>
-                <div class="toggle-content"><div>
-                    <strong><span class="zh">臺灣古寫真上色答復：</span><span class="en">Response from Colorized old photos of Taiwan:</span></strong><br><br>
-                    <span class="zh">• 這批圖資整體狀況欠佳，修復難度極高……（以下為原完整長文）</span>
-                    <span class="en">• The overall condition of these images is poor……（以下為原完整英文）</span>
-                    <!-- 這裡放你原本教室1的完整Q&A文字即可 -->
-                </div></div>
-            </div>
-        </div>
-
-         <!-- 教室 2 -->
-        <div class="sun-section" id="classroom-1">
-            <header class="sun-header"><div class="sun-logo"><span class="zh">黑白照片 vs 修復上色　Black-and-White vs Colorized</span><span class="en">Black-and-White vs Colorized</span></div></header>
-            <div class="sun-content">
-
-                <input type="checkbox" id="i1-1"><label for="i1-1" class="toggle-label"><span class="zh">黑白原圖 Original Black-and-White</span><span class="en">Original Black-and-White</span></label>
-                <div class="toggle-content"><img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/38/ascdc_muse.jpg" loading="lazy"></div>
-
-                <input type="checkbox" id="i1-2"><label for="i1-2" class="toggle-label"><span class="zh">修復上色 Restored and Colorized</span><span class="en">Restored and Colorized</span></label>
-                <div class="toggle-content"><img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/32/31/ascdc_muse.jpg" loading="lazy"></div>
-
-                <input type="checkbox" id="q1"><label for="q1" class="toggle-label"><span class="zh">【Q】觀眾提問（點擊查看）...</span><span class="en">【Q】Viewer Question (Click to view)...</span></label>
-                <div class="toggle-content"><div>
-                    <strong><span class="zh">臺灣古寫真上色答復：</span><span class="en">Response from Colorized old photos of Taiwan:</span></strong><br><br>
-                    <span class="zh">• 這批圖資整體狀況欠佳，修復難度極高……（以下為原完整長文）</span>
-                    <span class="en">• The overall condition of these images is poor……（以下為原完整英文）</span>
-                    <!-- 這裡放你原本教室2的完整Q&A文字即可 -->
-                </div></div>
-            </div>
-        </div>
-         <!-- 教室 3 -->
-        <div class="sun-section" id="classroom-1">
-            <header class="sun-header"><div class="sun-logo"><span class="zh">黑白照片 vs 修復上色　</span><span class="en">Black-and-White vs Colorized</span></div></header>
-            <div class="sun-content">
-
-                <input type="checkbox" id="i1-1"><label for="i1-1" class="toggle-label"><span class="zh">黑白原圖 </span><span class="en">Original Black-and-White</span></label>
-                <div class="toggle-content"><img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/38/ascdc_muse.jpg" loading="lazy"></div>
-
-                <input type="checkbox" id="i1-2"><label for="i1-2" class="toggle-label"><span class="zh">修復上色 Restored and Colorized</span><span class="en">Restored and Colorized</span></label>
-                <div class="toggle-content"><img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/32/31/ascdc_muse.jpg" loading="lazy"></div>
-
-                <input type="checkbox" id="q1"><label for="q1" class="toggle-label"><span class="zh">【Q】觀眾提問（點擊查看）...</span><span class="en">【Q】Viewer Question (Click to view)...</span></label>
-                <div class="toggle-content"><div>
-                    <strong><span class="zh">臺灣古寫真上色答復：</span><span class="en">Response from Colorized old photos of Taiwan:</span></strong><br><br>
-                    <span class="zh">• 這批圖資整體狀況欠佳，修復難度極高……（以下為原完整長文）</span>
-                    <span class="en">• The overall condition of these images is poor……（以下為原完整英文）</span>
-                    <!-- 這裡放你原本教室3的完整Q&A文字即可 -->
-                </div></div>
-            </div>
-        </div>
-      </div>
 </body>
 </html>
