@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>孫中山的科普教室3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Noto Sans TC',sans-serif;background:#f0f0f0;min-height:100vh;padding-bottom:90px;}
+        .container{max-width:1400px;margin:0 auto;padding:0 15px;}
+        .section{width:100%;max-width:1300px;margin:0 auto;background:#fff;border-radius:0 0 14px 14px;
+                 box-shadow:0 8px 20px rgba(0,0,0,0.1);position:relative;overflow:hidden;}
+        header{background:linear-gradient(135deg,#f4a261,#f7c08a);color:#fff;padding:2rem 1.2rem;text-align:center;position:relative;}
+        .logo{font-size:1.9rem;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);letter-spacing:-1px;}
+
+        /* 語言切換 */
+        .lang-switch{
+            position:absolute;top:15px;right:15px;z-index:1000;
+            background:rgba(255,255,255,0.3);color:#fff;border:2px solid #fff;
+            padding:8px 16px;border-radius:30px;cursor:pointer;font-weight:500;
+            backdrop-filter:blur(4px);transition:all .3s;
+        }
+        .lang-switch:hover{background:rgba(255,255,255,0.5);}
+
+        .content{padding:1.5rem;background:#fef9f0;min-height:calc(100vh - 180px);}
+
+        /* 圖片區：強制三張一樣高 */
+        .image-row{display:flex;gap:1rem;margin-bottom:1.5rem;}
+        .img-block{flex:1;text-align:center;}
+        .img-block img{
+            width:100%;height:300px;object-fit:cover;border-radius:12px;
+            border:3px solid #fce8c9;box-shadow:0 5px 16px rgba(139,88,47,0.2);
+        }
+        .img-label{
+            margin-top:0.5rem;padding:0.4rem 0.8rem;background:#fce8c9;color:#e67e22;
+            border-radius:20px;display:inline-block;font-weight:bold;font-size:0.95rem;
+        }
+
+        /* 手機版：垂直排列，但仍強制一樣高 */
+        @media (max-width:768px){
+            .image-row{flex-direction:column;}
+            .img-block img{height:260px !important;}
+        }
+
+        /* Q&A */
+        .qa-block{margin-top:1rem;}
+        .question{
+            padding:1.2rem 1.4rem;background:#fdf1e0;border-left:6px solid #f4a261;
+            font-size:1.2rem;line-height:1.9;cursor:pointer;user-select:none;
+            border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.1);
+        }
+        .answer{
+            margin-top:1rem;padding:1.8rem 1.4rem;background:#fdf1e0;border-radius:12px;
+            line-height:2;font-size:1.2rem;display:none;
+        }
+        .answer.show{display:block;animation:fadeIn .7s;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+
+        /* 底部導覽 */
+        .nav-bar{
+            position:fixed;bottom:0;left:0;right:0;background:rgba(244,162,97,0.98);
+            padding:1rem 0;text-align:center;backdrop-filter:blur(10px);z-index:999;
+            box-shadow:0 -4px 20px rgba(0,0,0,0.15);
+        }
+        .nav-bar button{
+            margin:0 1rem;padding:0.9rem 1.8rem;background:#fff;color:#e67e22;
+            border:none;border-radius:30px;font-weight:bold;cursor:pointer;
+            box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:1.1rem;
+        }
+        .nav-bar button.active{background:#e67e22;color:#fff;}
+
+        .back-btn{
+            position:fixed;bottom:90px;right:15px;z-index:998;
+            background:#e67e22;color:#fff;padding:14px 22px;border-radius:50px;
+            box-shadow:0 4px 15px rgba(230,126,34,0.4);cursor:pointer;font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="section">
+        <header>
+            <div class="lang-switch" id="langSwitch">EN</div>
+            <div class="logo" id="title">
+                敕使街道 vs 中山北路　Chokushi Kaidō vs Zhongshan North Road
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="image-row">
+                <div class="img-block">
+                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/36/ascdc_muse.jpg" alt="敕使街道">
+                    <div class="img-label" id="label1">
+                        敕使街道 Chokushi Kaidō (Imperial Envoy Road)<br>
+                        （村崎長昶，《臺北寫真帖》1913）
+                    </div>
+                </div>
+                <div class="img-block">
+                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/37/37/ascdc_muse.jpg" alt="中山北路二段">
+                    <div class="img-label" id="label2">
+                        中山北路二段 Zhongshan North Road Section 2<br>(Wikipedia user - Wpcpey)
+                    </div>
+                </div>
+                <div class="img-block">
+                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/38/33/ascdc_muse.jpg" alt="臺北第四尋常高等小學校">
+                    <div class="img-label" id="label3">
+                        臺北第四尋常高等小學校 Taipei Fourth Public Elementary School
+                    </div>
+                </div>
+            </div>
+
+            <div class="qa-block">
+                <div class="question" id="question">
+                    【Q】梅屋敷的位置毗鄰臺北車站，在今天的中山北路旁邊——我知道「敕使街道」在日治時期就是很重要的道路，孫中山來梅屋敷時一定有看到，不知當年的中山北路是什麼樣子？<br><br>
+                    <span style="color:#6b9080;">(點擊繼續..)</span>
+                </div>
+                <div class="answer" id="answer">
+                    <strong> examining人答復：</strong><br><br>
+                    沒錯，敕使街道確實是這次選件的重點之一，但很可惜目前找到的老照片，有些是1930年代拓寬後的樣貌，至於1910年代的照片，道路兩旁是相思樹與榕樹，經諮詢專業人士，應該是在今天中山北路二段、民生東西路交界處以北一帶，也不符合本次線上展「孫中山所見」的主題。<br><br>
+                    這裡另1張老照片是日治時期臺北第四小學校，畫面中的地點是今天的行政院，近景的道路是忠孝東路一段，出自臺灣總督府1913年出版的《臺灣統計要覽》，與孫中山來臺的年分相同，提供有興趣的朋友參考。（圖片來源：日本國立國會圖書館數位典藏）<br><br>
+                    （特別感謝：臺灣古寫真上色）
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 底部導覽（此頁為第3頁，所以 3 號按鈕高亮） -->
+<div class="nav-bar">
+    <button onclick="location.href='index.html'">1</button>
+    <button onclick="location.href='about.html'">2</button>
+    <button class="active" onclick="location.href='Third.html'">3</button>
+</div>
+
+<!-- 右下角回展覽 -->
+<div class="back-btn" onclick="window.close()">回展覽</div>
+
+<script>
+    const langSwitch = document.getElementById('langSwitch');
+    const els = {
+        title: document.getElementById('title'),
+        label1: document.getElementById('label1'),
+        label2: document.getElementById('label2'),
+        label3: document.getElementById('label3'),
+        question: document.getElementById('question'),
+        answer: document.getElementById('answer')
+    };
+
+    const zh = {
+        title: "敕使街道 vs 中山北路　Chokushi Kaidō vs Zhongshan North Road",
+        label1: "敕使街道 Chokushi Kaidō (Imperial Envoy Road)<br>（村崎長昶，《臺北寫真帖》1913）",
+        label2: "中山北路二段 Zhongshan North Road Section 2<br>(Wikipedia user - Wpcpey)",
+        label3: "臺北第四尋常高等小學校 Taipei Fourth Public Elementary School",
+        question: "【Q】梅屋敷的位置毗鄰臺北車站，在今天的中山北路旁邊——我知道「敕使街道」在日治時期就是很重要的道路，孫中山來梅屋敷時一定有看到，不知當年的中山北路是什麼樣子？<br><br><span style=\"color:#6b9080;\">(點擊繼續..)</span>",
+        answer: `<strong>策展人答復：</strong><br><br>
+                 沒錯，敕使街道確實是這次選件的重點之一，但很可惜目前找到的老照片，有些是1930年代拓寬後的樣貌，至於1910年代的照片，道路兩旁是相思樹與榕樹，經諮詢專業人士，應該是在今天中山北路二段、民生東西路交界處以北一帶，也不符合本次線上展「孫中山所見」的主題。<br><br>
+                 這裡另1張老照片是日治時期臺北第四小學校，畫面中的地點是今天的行政院，近景的道路是忠孝東路一段，出自臺灣總督府1913年出版的《臺灣統計要覽》，與孫中山來臺的年分相同，提供有興趣的朋友參考。（圖片來源：日本國立國會圖書館數位典藏）<br><br>
+                 （特別感謝：臺灣古寫真上色）`
+    };
+
+    const en = {
+        title: "Chokushi Kaidō vs Zhongshan North Road",
+        label1: "Chokushi Kaidō (Imperial Envoy Road)<br>(Murasaki Nagahisa, Photographic Album of Taipei, 1913)",
+        label2: "Zhongshan North Road Section 2<br>(Wikipedia user - Wpcpey)",
+        label3: "Taipei Fourth Public Elementary School",
+        question: "【Q】The Umeyashiki was located next to Taipei Station, along what is now Zhongshan North Road. I know that Chokushi Kaidō was an important road during the Japanese colonial period. Dr. Sun Yat-sen must have seen it when he visited Umeyashiki. What did Zhongshan North Road look like back then?<br><br><span style=\"color:#6b9080;\">(See more)</span>",
+        answer: `<strong>Response from Curator:</strong><br><br>
+                 You’re right — Chokushi Kaidō is indeed one of the key features highlighted in this selection. Unfortunately, most of the old photographs we’ve found so far date from the 1930s, after the road was widened. As for images from the 1910s, records indicate that both sides of the road were lined with acacia and banyan trees...<br><br>
+                 Here’s another related photograph from the same era — it shows the Taipei Fourth Elementary School during the Japanese colonial period. The location in the image corresponds to the Executive Yuan today...<br><br>
+                 (Special thanks to: Colorized old photos of Taiwan)`
+    };
+
+    function switchLang(toEN){
+        const d = toEN ? en : zh;
+        els.title.innerHTML = d.title;
+        els.label1.innerHTML = d.label1;
+        els.label2.innerHTML = d.label2;
+        els.label3.innerHTML = d.label3;
+        els.question.innerHTML = d.question;
+        els.answer.innerHTML = d.answer;
+        langSwitch.textContent = toEN ? "中" : "EN";
+    }
+
+    langSwitch.addEventListener('click', ()=> switchLang(langSwitch.textContent === "EN"));
+    switchLang(location.hash === '#en');
+
+    // 點擊展開答案
+    document.querySelector('.question').addEventListener('click', ()=>{
+        document.querySelector('.answer').classList.toggle('show');
+    });
+</script>
+</body>
+</html>
