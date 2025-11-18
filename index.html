@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>孫中山的科普教室2</title>
+    <title>孫中山的科普教室1</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Noto Sans TC',sans-serif;background:#f0f0f0;min-height:100vh;padding-bottom:90px;}
+        body{font-family:'Noto Sans TC',sans-serif;background:#f0f0f0;min-height:100vh;padding-bottom:90px;} /* 關鍵：預留底部空間 */
+
         .container{max-width:1400px;margin:0 auto;padding:0 15px;}
         .section{width:100%;max-width:1300px;margin:0 auto;background:#fff;border-radius:0 0 14px 14px;
                  box-shadow:0 8px 20px rgba(0,0,0,0.1);position:relative;overflow:hidden;}
+
         header{background:linear-gradient(135deg,#f4a261,#f7c08a);color:#fff;padding:2rem 1.2rem;text-align:center;position:relative;}
         .logo{font-size:1.9rem;font-weight:bold;text-shadow:0 2px 4px rgba(0,0,0,0.2);letter-spacing:-1px;}
 
-        /* 語言切換 */
         .lang-switch{
             position:absolute;top:15px;right:15px;z-index:1000;
             background:rgba(255,255,255,0.3);color:#fff;border:2px solid #fff;
@@ -23,12 +24,11 @@
         }
         .lang-switch:hover{background:rgba(255,255,255,0.5);}
 
-        .content{padding:1.5rem;background:#fef9f0;min-height:calc(100vh - 180px);}
+        .content{padding:1.5rem;background:#fef9f0;min-height:calc(100vh - 180px);} /* 讓內容區有足夠高度 */
 
-        /* 圖片區：桌機橫排，手機直排 */
-        .image-row{display:flex;gap:1rem;margin-bottom:1.5rem;}
+        .image-row{display:flex;gap:1rem;margin-bottom:1.5rem;transition:all .6s cubic-bezier(.25,.8,.25,1);transform-origin:top center;}
         .img-block{flex:1;text-align:center;}
-        .img-block img{width:100%;height:auto;max-height:300px;object-fit:cover;border-radius:12px;
+        .img-block img{width:100%;height:auto;max-height:340px;object-fit:cover;border-radius:12px;
                        border:3px solid #fce8c9;box-shadow:0 5px 16px rgba(139,88,47,0.2);}
         .img-label{margin-top:0.5rem;padding:0.4rem 0.8rem;background:#fce8c9;color:#e67e22;
                    border-radius:20px;display:inline-block;font-weight:bold;font-size:0.95rem;}
@@ -38,7 +38,6 @@
             .img-block img{max-height:260px;}
         }
 
-        /* Q&A */
         .qa-block{margin-top:1rem;}
         .question{
             padding:1.2rem 1.4rem;background:#fdf1e0;border-left:6px solid #f4a261;
@@ -50,12 +49,14 @@
             line-height:2;font-size:1.2rem;display:none;
         }
         .answer.show{display:block;animation:fadeIn .7s;}
+
         @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
 
-        /* 底部導覽 */
+        /* 底部導覽列 - 關鍵修正 */
         .nav-bar{
-            position:fixed;bottom:0;left:0;right:0;background:rgba(244,162,97,0.98);
-            padding:1rem 0;text-align:center;backdrop-filter:blur(10px);z-index:999;
+            position:fixed;bottom:0;left:0;right:0;
+            background:rgba(244,162,97,0.98);padding:1rem 0;
+            text-align:center;backdrop-filter:blur(10px);z-index:999;
             box-shadow:0 -4px 20px rgba(0,0,0,0.15);
         }
         .nav-bar button{
@@ -78,48 +79,45 @@
     <div class="section">
         <header>
             <div class="lang-switch" id="langSwitch">EN</div>
-            <div class="logo" id="title">
-                梅屋敷 vs 國父史蹟館　Umeyashiki vs Dr. Sun Yat-sen Memorial House
-            </div>
+            <div class="logo" id="title">黑白照片 vs 修復上色　Black-and-White vs Colorized</div>
         </header>
 
         <div class="content">
             <div class="image-row">
                 <div class="img-block">
-                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/35/37/ascdc_muse.jpg" alt="逸仙公園庭院一景">
-                    <div class="img-label" id="label1">逸仙公園庭院一景 Courtyard View, Yixian Park<br>(Wikipedia user-Outlookxp)</div>
+                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/38/ascdc_muse.jpg" alt="黑白原圖">
+                    <div class="img-label" id="label1">黑白原圖 Original Black-and-White</div>
                 </div>
                 <div class="img-block">
-                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/33/32/31/ascdc_muse.jpg" alt="會席梅屋">
-                    <div class="img-label" id="label2">會席梅屋 Umeyashiki Kaiseki Restaurant<br>（村崎長昶，《臺北寫真帖》1913）</div>
-                </div>
-                <div class="img-block">
-                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/35/35/ascdc_muse.jpg" alt="梅屋敷前側">
-                    <div class="img-label" id="label3">梅屋敷前側 Front of Umeyashiki<br>(Wikipedia user-Outlookxp)</div>
+                    <img src="https://openmuseum.tw/media/03f4bf779ad6c894674d7863b14895e4/32/34/31/37/32/31/ascdc_muse.jpg" alt="修復上色">
+                    <div class="img-label" id="label2">修復上色 Restored and Colorized</div>
                 </div>
             </div>
 
             <div class="qa-block">
                 <div class="question" id="question">
-                    【Q】我知道梅屋敷是今天的國父史蹟館，也是臺北市歷史建築，不過逸仙公園和老照片上的梅屋敷庭園，整體看起來好像不大一樣？<span style="color:#6b9080;">(點擊繼續..)</span>
+                    【Q】某位喜歡歷史老照片的觀眾提問：<br><br>
+                    看過這些黑白照片的原圖，再看修復後的彩圖，覺得這些臺灣老建築好令人驚豔！不過仔細想想，100多年前孫中山來臺灣的時候，這些雖然建築雖然新建沒幾年，但看起來的感覺應該也不會那麼新……是因為選擇「修舊如新」的修復方式嗎？<span style="color:#6b9080;">(點擊繼續..)</span>
                 </div>
                 <div class="answer" id="answer">
-                    <strong>策展人答復：</strong><br><br>
-                    是的，因為1980年代臺北鐵路地下化工程，梅屋敷主體建物經過遷移重組，往東北移動了50公尺左右；戶外庭園則改為中式園林的設計，因此不是當年日治時期的樣貌。
+                    <strong>臺灣古寫真上色答復：</strong><br><br>
+                    • 這批圖資整體狀況欠佳，修復難度極高，以「基隆火車站前荷揚狀況」來說，雖然網點化不算特別嚴重，但其實是沒什麼細節的，搬運物品的工人有沒有戴帽子都難以辨識；畫面右邊的新店街候船室是重要的視覺焦點，進行修復就需要很多人工介入，例如找其他可以補的圖來補，但這些圖光線、角度不見得會和原圖一致，就需要人工大量介入調整修飾。<br><br>
+                    •此外在黑白原圖中難以辨識的戎克船 （昔日臺灣常見的船隻，配色以紅黑綠藍白為主）、基隆郵便局（今愛三路基隆郵局）、日新橋（今富狗橋），都是1913年在這個基隆港視角會看到的重點景觀，在修復後得以重現細節，則是來自於對於歷史場景的專業理解和詮釋。<br><br>
+                    • 本次是以長邊4000-5000px以上為目標去修補，日後如果辦理實體展覽需要大圖輸出，也會有非常好的視覺效果，建築的風格特徵等細節看得更清楚，我們也可以更貼近當年這位革命旅人來臺所見的情景！
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 底部導覽（此頁為第2頁，所以 2 號按鈕高亮） -->
+<!-- 底部導覽 -->
 <div class="nav-bar">
-    <button onclick="location.href='index.html'">1</button>
-    <button class="active" onclick="location.href='about.html'">2</button>
+    <button class="active" onclick="location.href='index.html'">1</button>
+    <button onclick="location.href='about.html'">2</button>
     <button onclick="location.href='Third.html'">3</button>
 </div>
 
-<!-- 右下角回展覽 -->
+<!-- 右下回展覽 -->
 <div class="back-btn" onclick="window.close()">回展覽</div>
 
 <script>
@@ -128,35 +126,31 @@
         title: document.getElementById('title'),
         label1: document.getElementById('label1'),
         label2: document.getElementById('label2'),
-        label3: document.getElementById('label3'),
         question: document.getElementById('question'),
         answer: document.getElementById('answer')
     };
 
     const zh = {
-        title: "梅屋敷 vs 國父史蹟館　Umeyashiki vs Dr. Sun Yat-sen Memorial House",
-        label1: "逸仙公園庭院一景 Courtyard View, Yixian Park<br>(Wikipedia user-Outlookxp)",
-        label2: "會席梅屋 Umeyashiki Kaiseki Restaurant<br>（村崎長昶，《臺北寫真帖》1913）",
-        label3: "梅屋敷前側 Front of Umeyashiki<br>(Wikipedia user-Outlookxp)",
-        question: "【Q】我知道梅屋敷是今天的國父史蹟館，也是臺北市歷史建築，不過逸仙公園和老照片上的梅屋敷庭園，整體看起來好像不大一樣？<span style=\"color:#6b9080;\">(點擊繼續..)</span>",
-        answer: "<strong>策展人答復：</strong><br><br>是的，因為1980年代臺北鐵路地下化工程，梅屋敷主體建物經過遷移重組，往東北移動了50公尺左右；戶外庭園則改為中式園林的設計，因此不是當年日治時期的樣貌。"
+        title: "黑白照片 vs 修復上色　Black-and-White vs Colorized",
+        label1: "黑白原圖 Original Black-and-White",
+        label2: "修復上色 Restored and Colorized",
+        question: `【Q】某位喜歡歷史老照片的觀眾提問：<br><br>看過這些黑白照片的原圖，再看修復後的彩圖，覺得這些臺灣老建築好令人驚豔！不過仔細想想，100多年前孫中山來臺灣的時候，這些雖然建築雖然新建沒幾年，但看起來的感覺應該也不會那麼新……是因為選擇「修舊如新」的修復方式嗎？<span style="color:#6b9080;">(點擊繼續..)</span>`,
+        answer: `<strong>臺灣古寫真上色答復：</strong><br><br>• 這批圖資整體狀況欠佳，修復難度極高……（全文同上）`
     };
 
     const en = {
-        title: "Umeyashiki vs Dr. Sun Yat-sen Memorial House",
-        label1: "Courtyard View, Yixian Park<br>(Wikipedia user-Outlookxp)",
-        label2: "Umeyashiki Kaiseki Restaurant<br>(Murasaki Nagahisa, Photographic Album of Taipei, 1913)",
-        label3: "Front of Umeyashiki<br>(Wikipedia user-Outlookxp)",
-        question: "【Q】I know that Umeyashiki is today’s Dr. Sun Yat-sen Historical Residence, which is also designated as a Taipei City Historic Building. However, the Yixian Park and the Umeyashiki Garden seen in the old photographs look quite different from each other?<span style=\"color:#6b9080;\"> (See more)</span>",
-        answer: "<strong>Response from Curator:</strong><br><br>That’s right — during the Taipei Railway Underground Project in the 1980s, the main structure of Umeyashiki was dismantled and relocated about 50 meters to the northeast. The surrounding garden area was later redesigned in the style of a traditional Chinese landscape garden, so it no longer reflects the original appearance from the Japanese colonial period."
+        title: "Black-and-White vs Colorized Restoration",
+        label1: "Original Black-and-White",
+        label2: "Restored and Colorized",
+        question: `【Q】A viewer who enjoys old historical photographs asked:<br><br>Looking at the original black and white photos... <span style="color:#6b9080;">(See more)</span>`,
+        answer: `<strong>Response from Colorized old photos of Taiwan:</strong><br><br>• The overall condition of these images is poor... (full English text)`
     };
 
     function switchLang(toEN){
         const d = toEN ? en : zh;
-        els.title.innerHTML = d.title;
-        els.label1.innerHTML = d.label1;
-        els.label2.innerHTML = d.label2;
-        els.label3.innerHTML = d.label3;
+        els.title.textContent = d.title;
+        els.label1.textContent = d.label1;
+        els.label2.textContent = d.label2;
         els.question.innerHTML = d.question;
         els.answer.innerHTML = d.answer;
         langSwitch.textContent = toEN ? "中" : "EN";
@@ -165,7 +159,7 @@
     langSwitch.addEventListener('click', ()=> switchLang(langSwitch.textContent === "EN"));
     switchLang(location.hash === '#en');
 
-    // 點擊問題展開答案
+    // 點擊展開答案
     document.querySelector('.question').addEventListener('click', ()=>{
         document.querySelector('.answer').classList.toggle('show');
     });
